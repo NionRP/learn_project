@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+{% for product in products %}
+<div class="product">
+    <h2>{{ product.name }}</h2>
+    <p>{{ product.description }}</p>
+    <img src="{{product.image.url}}" alt="{{product.name}}">
+</div>
+{% endfor %}
+{% endblock %}
