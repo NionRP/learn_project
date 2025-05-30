@@ -1,24 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="product-container">
-    {% for product in products %}
-    <div class="product-card">
-        <div class="product-image-container">
+    <h1>Наши товары</h1>
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-            {% if product.price < 100 %}  
-            <span class="product-badge">Хит!</span>
-            {% endif %}
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">{{ product.name }}</h3>
-            <p class="product-description">{{ product.description|truncatechars:100 }}</p>
-            <div class="product-footer">
-                <span class="product-price">{{ product.price }} ₽</span>
-                <button class="product-button">В корзину</button>
+            <div class="product-info">
+                <h3 class="product-title">{{ product.name }}</h3>
+                <p class="product-description">
+                    {{ product.description|truncatechars:80 }}
+                </p>
+                <div class="product-price">{{ product.price }} ₽</div>
             </div>
         </div>
+        {% endfor %}
+        
+        {# Простой способ добавить пустые карточки #}
+        {% if products|length > 0 %}
+            {% for i in "123" %}
+                {% if products|length|add:forloop.counter0 < 4 %}
+                <div class="product-card empty"></div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        
+        {% if not products %}
+        <p>Товары пока не добавлены</p>
+        {% endif %}
     </div>
-    {% endfor %}
-</div>
 {% endblock %}

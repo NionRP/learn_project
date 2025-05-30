@@ -1,108 +1,151 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Магазин</title>
+    <title>{% block title %}N-Shoppe{% endblock %}</title>
     <style>
-        .product-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 20px;
+        :root {
+            --primary-color: #1a73e8;
+            --text-light: #ffffff;
+            --text-dark: #333333;
         }
-
-        .product-card {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background: white;
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: var(--text-dark);
         }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        }
-
-        .product-image-container {
-            position: relative;
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .product-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .product-card:hover .product-image {
-            transform: scale(1.05);
-        }
-
-        .product-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff4757;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .product-info {
-            padding: 15px;
-        }
-
-        .product-title {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .product-description {
-            color: #666;
-            font-size: 14px;
-            margin: 0 0 15px 0;
-            line-height: 1.4;
-        }
-
-        .product-footer {
+        
+        /* Навигационная панель */
+        .navbar {
+            background-color: var(--primary-color);
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .product-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2f3542;
+        
+        .logo {
+            color: var(--text-light);
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
         }
-
-        .product-button {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 8px 16px;
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
             border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background-color 0.3s;
         }
-
-        .product-button:hover {
-            background: #2980b9;
+        
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
         }
-
-        @media (max-width: 768px) {
-            .product-container {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        
+        /* Основной контент */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        /* Сетка товаров - теперь строго 4 в ряд */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            padding: 20px 0;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card.empty {
+            visibility: hidden; /* Скрываем пустые карточки, но сохраняем место */
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-title {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+        
+        .product-description {
+            color: #666;
+            font-size: 14px;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 1200px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
-    {% block content %}{% endblock %}
+    <!-- Навигационная панель -->
+    <nav class="navbar">
+        <a href="/" class="logo">N-Shoppe</a>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Регистрация</a>
+            <a href="#" class="nav-link">Вход</a>
+            <a href="#" class="nav-link">Корзина</a>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>
