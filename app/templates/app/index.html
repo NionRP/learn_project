@@ -1,12 +1,24 @@
-{% extends "base.html" %}
-{% block title %} {{ title }} {% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-{% for product in products %}
-<div class="product">
-    <h2>{{ product.name }}</h2>
-    <p>{{ product.description }}</p>
-    <img src="{{product.image.url}}" alt="{{product.name}}">
+<div class="product-container">
+    {% for product in products %}
+    <div class="product-card">
+        <div class="product-image-container">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+            {% if product.price < 100 %}  
+            <span class="product-badge">Хит!</span>
+            {% endif %}
+        </div>
+        <div class="product-info">
+            <h3 class="product-title">{{ product.name }}</h3>
+            <p class="product-description">{{ product.description|truncatechars:100 }}</p>
+            <div class="product-footer">
+                <span class="product-price">{{ product.price }} ₽</span>
+                <button class="product-button">В корзину</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
 {% endblock %}
