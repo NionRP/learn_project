@@ -1,32 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Наши товары</h1>
-    <div class="product-grid">
-        {% for product in products %}
-        <div class="product-card">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-            <div class="product-info">
-                <h3 class="product-title">{{ product.name }}</h3>
-                <p class="product-description">
-                    {{ product.description|truncatechars:80 }}
-                </p>
-                <div class="product-price">{{ product.price }} ₽</div>
-            </div>
+<div class="mb-4">
+    <h2 class="fw-bold">Популярные товары</h2>
+</div>
+
+<div class="products-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <!-- Изображение на всю ширину -->
+        <div class="product-img-container">
+            <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
         </div>
-        {% endfor %}
-        
-        {# Простой способ добавить пустые карточки #}
-        {% if products|length > 0 %}
-            {% for i in "123" %}
-                {% if products|length|add:forloop.counter0 < 4 %}
-                <div class="product-card empty"></div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-        
-        {% if not products %}
-        <p>Товары пока не добавлены</p>
-        {% endif %}
+        <!-- Тело карточки -->
+        <div class="product-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="text-muted">{{ product.description|truncatechars:50 }}</p>
+            <span class="product-price">{{ product.price }} ₽</span>
+        </div>
+        <!-- Кнопка "В корзину" (отдельный блок) -->
+        <div class="add-to-cart-container">
+            <button class="btn add-to-cart-btn">
+                В корзину
+            </button>
+        </div>
     </div>
+    {% endfor %}
+</div>
 {% endblock %}
