@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Увеличенная синяя шапка */
         .navbar {
             background-color: #3c6fff;
             padding: 20px 0 !important;
@@ -25,7 +24,7 @@
             margin: 0 15px;
         }
         .search-bar {
-            width: 500px; /* Уменьшенная ширина */
+            width: 500px;
             margin: 0 30px;
         }
         .search-input {
@@ -36,7 +35,6 @@
             font-size: 16px !important;
             border-radius: 8px !important;
         }
-        /* Исправление бага с белым фоном */
         .search-input:focus {
             background-color: rgba(255, 255, 255, 0.3) !important;
             color: white !important;
@@ -191,13 +189,14 @@
             }
         }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Шапка сайта -->
     <header class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-store me-2"></i>N-Shoppe
+                <i class="fas fa-store me-2"></i>LearnProject
             </a>
             
             <div class="d-flex search-bar">
@@ -208,14 +207,14 @@
             </div>
             
             <div class="d-flex align-items-center">
-                <a href="#" class="nav-link"><i class="fas fa-heart me-1"></i> Избранное</a>
+                <a href="/address/" class="nav-link"><i class="fas fa-map-marker-alt me-1"></i> Адрес</a>
                 <a href="#" class="nav-link"><i class="fas fa-shopping-cart me-1"></i> Корзина</a>
                 <a href="#" class="nav-link"><i class="fas fa-user me-1"></i> Войти</a>
             </div>
         </div>
     </header>
 
-    <!-- Основное содержимое -->
+    <!-- Основное содержимое - ЕДИНСТВЕННЫЙ блок content -->
     <main class="container">
         {% block content %}{% endblock %}
     </main>
@@ -228,15 +227,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Дополнительный скрипт для предотвращения отправки пустой формы поиска
-        document.querySelector('.search-btn').addEventListener('click', function(e) {
-            const searchInput = document.querySelector('.search-input');
-            if (searchInput.value.trim() === '') {
-                e.preventDefault();
-                searchInput.focus();
-            }
-        });
-    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

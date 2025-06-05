@@ -1,4 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+class UserAddress(models.Model):
+    """Модель для хранения адресов пользователей"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    address = models.TextField(verbose_name="Адрес доставки")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Адрес {self.user.username}: {self.address[:50]}..."
 
 
 class Product(models.Model):
