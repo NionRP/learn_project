@@ -17,11 +17,16 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from app.views import base_view, category_view, product_detail, address_page, save_address
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("app.urls")),
+    path('admin/', admin.site.urls),
+    path('', base_view, name='base'),
+    path('category/<slug:slug>/', category_view, name='category'),
+    path('product/<int:id>/', product_detail, name='product'),
+    path('address/', address_page, name='address'),
+    path('save-address/', save_address, name='save_address'),
 ]
 
 if settings.DEBUG:
