@@ -1,31 +1,24 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from .models import UserAddress, Product, Category
 import json
 
 def get_categories(request):
-    """Вспомогательная функция для получения категорий"""
+    """Получение всех категорий для меню"""
     return {'categories': Category.objects.all()}
 
 def base_view(request):
-    """Главная страница (ранее index)"""
+    """Главная страница с товарами"""
     products = Product.objects.all()
-    categories = Category.objects.all()
-    
-    category_id = request.GET.get('category')
-    if category_id:
-        products = products.filter(category_id=category_id)
-    
     context = {
         'products': products,
-        'categories': categories,
     }
     context.update(get_categories(request))
     return render(request, 'app/index.html', context)
 
 def category_view(request, slug):
-    """Отображение товаров по категории"""
-    category = Category.objects.get(slug=slug)
+    """Фильтрация товаров по выбранной категории"""
+    category = get_object_or_404(Category, slug=slug)
     products = Product.objects.filter(category=category)
     
     context = {
@@ -33,7 +26,7 @@ def category_view(request, slug):
         'products': products,
     }
     context.update(get_categories(request))
-    return render(request, 'app/category.html', context)
+    return render(request, 'app/index.html', context)
 
 def address_page(request):
     """Страница выбора адреса"""

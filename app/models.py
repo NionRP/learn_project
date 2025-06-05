@@ -1,17 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class UserAddress(models.Model):
-    """Модель для хранения адресов пользователей"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    address = models.TextField(verbose_name="Адрес доставки")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"Адрес {self.user.username}: {self.address[:50]}..."
-
-
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название категории")
     slug = models.SlugField(unique=True)
@@ -37,3 +26,12 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
+
+class UserAddress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    address = models.TextField(verbose_name="Адрес доставки")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Адрес {self.user.username}"

@@ -1,30 +1,33 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-<div class="mb-4">
-    <h2 class="fw-bold">Популярные товары</h2>
-</div>
-
-<div class="products-grid">
-    {% for product in products %}
-    <div class="product-card">
-        <!-- Изображение на всю ширину -->
-        <div class="product-img-container">
-            <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
+<div class="container mt-4">
+    {% if category %}
+        <h2 class="mb-4">Категория: {{ category.name }}</h2>
+    {% endif %}
+    
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <a href="{% url 'product_detail' product.id %}">
+                <div class="product-img-container">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                </div>
+                <div class="product-body">
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description|truncatechars:60 }}</p>
+                    <div class="product-price">{{ product.price }} ₽</div>
+                </div>
+            </a>
+            <div class="add-to-cart-container">
+                <button class="btn add-to-cart-btn">В корзину</button>
+            </div>
         </div>
-        <!-- Тело карточки -->
-        <div class="product-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="text-muted">{{ product.description|truncatechars:50 }}</p>
-            <span class="product-price">{{ product.price }} ₽</span>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">Товары не найдены.</div>
         </div>
-        <!-- Кнопка "В корзину" (отдельный блок) -->
-        <div class="add-to-cart-container">
-            <button class="btn add-to-cart-btn">
-                В корзину
-            </button>
-        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}

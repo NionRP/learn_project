@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', base_view, name='base'),
     path('category/<slug:slug>/', category_view, name='category'),
-    path('product/<int:id>/', product_detail, name='product'),
+    path('product/<int:id>/', product_detail, name='product_detail'),
     path('address/', address_page, name='address'),
     path('save-address/', save_address, name='save_address'),
 ]

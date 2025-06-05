@@ -271,7 +271,7 @@
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <h5 class="px-3 py-2 border-bottom">Категории</h5>
         {% for category in categories %}
-            <a href="#">{{ category.name }}</a>
+            <a href="{% url 'category' category.slug %}">{{ category.name }}</a>
         {% endfor %}
     </div>
 
