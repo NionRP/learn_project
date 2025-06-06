@@ -8,9 +8,11 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib import messages
+from .models import Product, MainAd, ProductAd
 from .models import Product, Category, Cart, CartItem, UserAddress, CartItem
 import logging
 import json
+import random
 
 def login_view(request):
     if request.method == 'POST':
@@ -63,13 +65,18 @@ def get_categories(request):
 def base_view(request):
     # Получаем все товары и категории
     products = Product.objects.all()
+    main_ads = MainAd.objects.filter(is_active=True)
+    product_ads = ProductAd.objects.filter(is_active=True)
     categories = Category.objects.all()
     
     context = {
         'products': products,
+        'main_ads': main_ads,
+        'product_ads': product_ads,
         'categories': categories,
     }
     return render(request, 'app/index.html', context)
+    return render(request, 'app/base.html', context)
 
 def category_view(request, slug):
     """Фильтрация товаров по категории с поиском"""

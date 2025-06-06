@@ -7,7 +7,7 @@
     <title>{% block title %}Learn Project (Wildberries Style){% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
+ <style>
         /* Ваши существующие стили остаются без изменений */
         .navbar {
             background-color: #3c6fff;
@@ -16,7 +16,91 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-                }
+        /* Стили для рекламы */
+        .main-ad-container {
+            grid-column: span 6;
+            margin: 20px 0;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .main-ad-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+        
+        .main-ad-slide {
+            min-width: 100%;
+            height: 300px;
+        }
+        
+        .main-ad-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .ad-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.5);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+        
+        .ad-arrow:hover {
+            background: rgba(255,255,255,0.8);
+        }
+        
+        .ad-arrow-left {
+            left: 15px;
+        }
+        
+        .ad-arrow-right {
+            right: 15px;
+        }
+        
+        .product-ad {
+            grid-column: span 3;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-ad:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-ad img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cart-counter {
+            font-size: 0.7rem;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        .animate-bounce {
+            animation: bounce 0.5s;
+        }
+        
         .navbar-brand {
             font-size: 24px !important;
             font-weight: bold;
@@ -362,7 +446,28 @@
 
     <!-- Основное содержимое -->
     <main class="container">
-        {% block content %}{% endblock %}
+        <!-- Главная реклама (6 слотов) -->
+        {% if main_ads %}
+        <div class="main-ad-container">
+            <div class="main-ad-slider" id="mainAdSlider">
+                {% for ad in main_ads %}
+                <div class="main-ad-slide">
+                    <img src="{{ ad.image.url }}" alt="Реклама {{ forloop.counter }}">
+                </div>
+                {% endfor %}
+            </div>
+            <button class="ad-arrow ad-arrow-left" onclick="moveSlide(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="ad-arrow ad-arrow-right" onclick="moveSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        {% endif %}
+        
+        {% block content %}
+        <!-- Содержимое будет вставлено из дочерних шаблонов -->
+        {% endblock %}
     </main>
 
     <!-- Подвал -->
@@ -451,6 +556,26 @@
                 }
             });
         });
+
+        // Код для рекламного слайдера
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.main-ad-slide');
+        
+        function moveSlide(direction) {
+            currentSlide += direction;
+            
+            if (currentSlide >= slides.length) {
+                currentSlide = 0;
+            } else if (currentSlide < 0) {
+                currentSlide = slides.length - 1;
+            }
+            
+            document.getElementById('mainAdSlider').style.transform = 
+                `translateX(-${currentSlide * 100}%)`;
+        }
+        
+        // Автоматическая прокрутка каждые 5 секунд
+        setInterval(() => moveSlide(1), 5000);
     </script>
     {% block extra_js %}{% endblock %}
 </body>

@@ -56,3 +56,13 @@ class UserAddress(models.Model):
 
     def __str__(self):
         return f"Адрес {self.user.username}"
+
+class MainAd(models.Model):
+    image = models.ImageField(upload_to='ads/main/')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class ProductAd(models.Model):
+    image = models.ImageField(upload_to='ads/products/')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
