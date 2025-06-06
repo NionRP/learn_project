@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+from django.db.models import Q
 from .models import UserAddress, Product, Category
 import json
 
@@ -8,22 +9,37 @@ def get_categories(request):
     return {'categories': Category.objects.all()}
 
 def base_view(request):
-    """Главная страница с товарами"""
+    """Главная страница с товарами и поиском"""
     products = Product.objects.all()
+    search_query = request.GET.get('search', '')
+    
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
     context = {
         'products': products,
+        'search_query': search_query,
     }
     context.update(get_categories(request))
     return render(request, 'app/index.html', context)
 
 def category_view(request, slug):
-    """Фильтрация товаров по выбранной категории"""
+    """Фильтрация товаров по категории с поиском"""
     category = get_object_or_404(Category, slug=slug)
     products = Product.objects.filter(category=category)
+    search_query = request.GET.get('search', '')
+    
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query))
     
     context = {
         'category': category,
         'products': products,
+        'search_query': search_query,
     }
     context.update(get_categories(request))
     return render(request, 'app/index.html', context)

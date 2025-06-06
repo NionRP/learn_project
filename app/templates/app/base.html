@@ -279,27 +279,36 @@
     <div class="overlay" id="overlay" onclick="closeNav()"></div>
 
     <!-- Шапка сайта -->
-        <header class="navbar navbar-expand-lg navbar-dark">
+    <header class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <!-- Сначала название проекта -->
+            <!-- Название проекта -->
             <a class="navbar-brand me-3" href="/">
                 <i class="fas fa-store me-2"></i>LearnProject
             </a>
             
-            <!-- Затем кнопка меню -->
+            <!-- Кнопка меню категорий -->
             <button class="menu-toggle-btn me-3" onclick="openNav()">
                 <i class="fas fa-bars"></i> Категории
             </button>
             
-            <!-- Поисковая строка -->
-            <div class="d-flex search-bar">
-                <input class="form-control search-input" type="search" placeholder="Найти товар...">
-                <button class="btn search-btn" type="submit">
-                    <i class="fas fa-search"></i>
-                </button>
+            <!-- Строка поиска с кнопкой справа -->
+            <div class="d-flex align-items-center" style="width: 500px;">
+                <form action="{% if category %}{% url 'category' category.slug %}{% else %}{% url 'base' %}{% endif %}" method="get" class="d-flex w-100">
+                    <input 
+                        class="form-control search-input me-2" 
+                        type="search" 
+                        name="search" 
+                        placeholder="Найти товар..." 
+                        value="{{ search_query|default:'' }}"
+                        aria-label="Поиск товаров"
+                    >
+                    <button class="btn search-btn" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
             </div>
             
-            <!-- Остальные элементы навигации -->
+            <!-- Навигационные ссылки -->
             <div class="d-flex align-items-center">
                 <a href="/address/" class="nav-link"><i class="fas fa-map-marker-alt me-1"></i> Адрес</a>
                 <a href="#" class="nav-link"><i class="fas fa-shopping-cart me-1"></i> Корзина</a>

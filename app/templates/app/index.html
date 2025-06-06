@@ -5,7 +5,17 @@
     {% if category %}
         <h2 class="mb-4">Категория: {{ category.name }}</h2>
     {% endif %}
-    
+
+    {% if search_query %}
+        <div class="alert alert-light mb-4">
+            Результаты поиска по запросу: "<strong>{{ search_query }}</strong>"
+            {% if products.count == 0 %}
+                - ничего не найдено
+            {% endif %}
+        </div>
+    {% endif %}
+
+
     <div class="products-grid">
         {% for product in products %}
         <div class="product-card">
