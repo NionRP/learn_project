@@ -140,46 +140,32 @@ def cart_view(request):
     return render(request, 'app/cart.html', context)
 
 @ensure_csrf_cookie
-@require_POST
 @login_required
 def add_to_cart(request, product_id):
-    # Проверяем, что это AJAX-запрос
     if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse(
-            {'status': 'error', 'message': 'Требуется AJAX-запрос'}, 
-            status=400
-        )
-
+        return JsonResponse({'status': 'error', 'message': 'Требуется AJAX-запрос'}, status=400)
+    
     try:
+        cart, _ = Cart.objects.get_or_create(user=request.user)
         product = Product.objects.get(id=product_id)
-        cart, created = Cart.objects.get_or_create(user=request.user)
         
-        cart_item, item_created = CartItem.objects.get_or_create(
+        cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
             defaults={'quantity': 1}
         )
         
-        if not item_created:
+        if not created:
             cart_item.quantity += 1
             cart_item.save()
         
         return JsonResponse({
             'status': 'success',
-            'message': 'Товар добавлен в корзину',
             'cart_items_count': cart.items.count()
         })
     
-    except Product.DoesNotExist:
-        return JsonResponse(
-            {'status': 'error', 'message': 'Товар не найден'}, 
-            status=404
-        )
     except Exception as e:
-        return JsonResponse(
-            {'status': 'error', 'message': str(e)}, 
-            status=500
-        )
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 @login_required
 def remove_from_cart(request, item_id):
