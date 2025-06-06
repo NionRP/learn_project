@@ -179,6 +179,25 @@
             color: #ff2d2d;
             font-size: 18px;
         }
+        
+        .auth-card {
+            max-width: 450px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-form .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+       }
+
+        .auth-btn {
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
 
         /* Кнопка "В корзину" */
         .add-to-cart-container {
@@ -307,12 +326,23 @@
                     </button>
                 </form>
             </div>
-            
             <!-- Навигационные ссылки -->
             <div class="d-flex align-items-center">
-                <a href="/address/" class="nav-link"><i class="fas fa-map-marker-alt me-1"></i> Адрес</a>
-                <a href="#" class="nav-link"><i class="fas fa-shopping-cart me-1"></i> Корзина</a>
-                <a href="#" class="nav-link"><i class="fas fa-user me-1"></i> Войти</a>
+                <a href="{% url 'address' %}" class="nav-link"><i class="fas fa-map-marker-alt me-1"></i> Адрес</a>
+                <a href="{% url 'cart' %}" class="nav-link position-relative">
+                    <i class="fas fa-shopping-cart me-1"></i> Корзина
+                    {% if user.is_authenticated and cart and cart.items.count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ cart.items.count }}
+                        <span class="visually-hidden">товаров в корзине</span>
+                    </span>
+                    {% endif %}
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="nav-link"><i class="fas fa-sign-out-alt me-1"></i> Выйти</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt me-1"></i> Войти</a>
+                {% endif %}
             </div>
         </div>
     </header>
@@ -344,5 +374,30 @@
         }
     </script>
     {% block extra_js %}{% endblock %}
+    <script>
+// Обработка добавления в корзину
+document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.productId;
+        
+        fetch(`/add-to-cart/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Товар добавлен в корзину');
+            } else if (data.status === 'login_required') {
+                window.location.href = '{% url "auth" %}';
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

@@ -1,0 +1,47 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Вход / Регистрация</h5>
+                <button type="button" class="btn-close" onclick="window.history.back()"></button>
+            </div>
+            <div class="modal-body">
+                <form id="auth-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Войти или зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('auth-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch('{% url "auth" %}', {
+        method: 'POST',
+        body: new FormData(this),
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.reload();
+        }
+    });
+});
+</script>
+{% endblock %}

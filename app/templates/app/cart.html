@@ -1,0 +1,169 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    {% if not request.user.is_authenticated %}
+    <div class="alert alert-warning">
+        Пожалуйста, <a href="{% url 'login' %}">войдите</a> или <a href="{% url 'register' %}">зарегистрируйтесь</a> для доступа к корзине.
+    </div>
+    {% else %}
+    <h2 class="mb-4">Ваша корзина</h2>
+    
+    <div class="row">
+        <div class="col-md-8">
+            {% if cart.items.count %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    {% for item in cart.items.all %}
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                            <div class="ms-3">
+                                <h5>{{ item.product.name }}</h5>
+                                <div class="d-flex align-items-center mt-2">
+                                    <button class="btn btn-sm btn-outline-secondary quantity-btn" 
+                                            data-action="decrease" data-id="{{ item.id }}">-</button>
+                                    <span class="mx-2">{{ item.quantity }}</span>
+                                    <button class="btn btn-sm btn-outline-secondary quantity-btn" 
+                                            data-action="increase" data-id="{{ item.id }}">+</button>
+                                    <span class="ms-3">{{ item.total_price }} ₽</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger btn-sm remove-from-cart" data-id="{{ item.id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Ваша корзина пуста
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Итого</h5>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Товары:</span>
+                        <span>{{ cart.total_price }} ₽</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6>Адрес доставки:</h6>
+                        {% if address %}
+                        <p>{{ address.address }}</p>
+                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressModal">
+                            Изменить адрес
+                        </button>
+                        {% else %}
+                        <p>Адрес не указан</p>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addressModal">
+                            Указать адрес
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    <button class="btn btn-primary w-100" {% if not cart.items.count or not address %}disabled{% endif %}>
+                        Оформить заказ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для адреса -->
+    <div class="modal fade" id="addressModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Адрес доставки</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="address-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea class="form-control" name="address" rows="3" required>{% if address %}{{ address.address }}{% endif %}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Обработка формы адреса
+document.getElementById('address-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch('{% url "update_address" %}', {
+        method: 'POST',
+        body: new FormData(this),
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.reload();
+        }
+    });
+});
+
+// Удаление товара из корзины
+document.querySelectorAll('.remove-from-cart').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const itemId = this.dataset.id;
+        fetch(`/remove-from-cart/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.reload();
+            }
+        });
+    });
+});
+
+// Изменение количества товара
+document.querySelectorAll('.quantity-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const action = this.dataset.action;
+        const itemId = this.dataset.id;
+        
+        fetch(`/update-cart-item/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: action
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.reload();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

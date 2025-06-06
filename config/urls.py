@@ -18,7 +18,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
-from app.views import base_view, category_view, product_detail, address_page, save_address
+from app.views import remove_from_cart, update_cart_item
+from app.views import register_view
+from app.views import (
+    base_view, category_view, product_detail,
+    address_page, save_address, cart_view,
+    add_to_cart, update_address, auth_view,
+    login_view, logout_view, register_view  # Добавляем новые view
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +34,16 @@ urlpatterns = [
     path('product/<int:id>/', product_detail, name='product_detail'),
     path('address/', address_page, name='address'),
     path('save-address/', save_address, name='save_address'),
+    path('cart/', cart_view, name='cart'),
+    path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
+    path('update-address/', update_address, name='update_address'),
+    path('auth/', auth_view, name='auth'),
+    path('remove-from-cart/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
+    path('update-cart-item/<int:item_id>/', update_cart_item, name='update_cart_item'),
+    path('register/', register_view, name='register'),
+    path('login/', login_view, name='login'),  # Новый URL для входа
+    path('logout/', logout_view, name='logout'),  # Новый URL для выхода
+    path('register/', register_view, name='register'),  # Новый URL для регистрации
 ]
 
 if settings.DEBUG:
