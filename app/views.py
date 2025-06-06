@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib import messages
 from .models import Product, Category, Cart, CartItem, UserAddress, CartItem
 import logging
@@ -138,18 +139,21 @@ def cart_view(request):
     }
     return render(request, 'app/cart.html', context)
 
-@csrf_exempt  # Временно для тестирования
+@ensure_csrf_cookie
 @require_POST
 @login_required
 def add_to_cart(request, product_id):
+    # Проверяем, что это AJAX-запрос
+    if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse(
+            {'status': 'error', 'message': 'Требуется AJAX-запрос'}, 
+            status=400
+        )
+
     try:
-        # Проверяем, существует ли товар
         product = Product.objects.get(id=product_id)
-        
-        # Получаем или создаём корзину
         cart, created = Cart.objects.get_or_create(user=request.user)
         
-        # Добавляем товар в корзину
         cart_item, item_created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
@@ -167,16 +171,15 @@ def add_to_cart(request, product_id):
         })
     
     except Product.DoesNotExist:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Товар не найден'
-        }, status=404)
-    
+        return JsonResponse(
+            {'status': 'error', 'message': 'Товар не найден'}, 
+            status=404
+        )
     except Exception as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': str(e)
-        }, status=500)
+        return JsonResponse(
+            {'status': 'error', 'message': str(e)}, 
+            status=500
+        )
 
 @login_required
 def remove_from_cart(request, item_id):
